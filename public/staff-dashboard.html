@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Portal - Hostel Complaint System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #10b981;
+            --secondary-color: #059669;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --info-color: #0ea5e9;
+            --light-bg: #f8fafc;
+            --dark-text: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #a7f3d0 0%, #34d399 50%, #059669 100%);
+            background-attachment: fixed;
+            color: var(--dark-text);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.6rem;
+            color: #f8fafc !important;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(31, 38, 135, 0.2);
+        }
+
+        .card-header {
+            background: rgba(255, 255, 255, 0.5);
+            color: var(--dark-text);
+            border-bottom: 1px solid var(--glass-border);
+            font-weight: 700;
+            padding: 20px 25px;
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .stats-card {
+            text-align: center;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-badge {
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(5px);
+        }
+
+        .status-assigned {
+            background: rgba(14, 165, 233, 0.2);
+            color: #0284c7;
+            border: 1px solid rgba(14, 165, 233, 0.3);
+        }
+
+        .status-in_progress {
+            background: rgba(245, 158, 11, 0.2);
+            color: #d97706;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: #059669;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .hidden { display: none; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .sidebar {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 25px;
+            color: #f8fafc;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-user-cog"></i> Staff Portal
+            </a>
+            <div class="ms-auto">
+                <button class="btn btn-outline-light rounded-pill px-4" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container dashboard-container">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 mb-4">
+                <div class="sidebar">
+                    <div class="text-center mb-4">
+                        <div class="rounded-circle bg-success d-inline-flex align-items-center justify-content-center text-white" style="width: 80px; height: 80px; font-size: 2rem;">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h5 class="mt-3" id="sidebarUserName">Staff Name</h5>
+                        <p class="text-muted mb-0">Maintenance Staff</p>
+                    </div>
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#" id="sidebarDashboard" onclick="showSection('dashboard')">
+                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                        </a>
+                        <a class="nav-link" href="#" id="sidebarTasks" onclick="showSection('tasks')">
+                            <i class="fas fa-tasks me-2"></i> My Tasks
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9">
+                <!-- Dashboard Overview -->
+                <div id="dashboardContent" class="main-content fade-in">
+                    <h4 class="mb-4 text-white"><i class="fas fa-chart-line"></i> Work Overview</h4>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card stats-card">
+                                <div class="stats-number" id="totalTasks">0</div>
+                                <div class="stats-label mt-2 fw-bold text-secondary">Total Assignments</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card stats-card">
+                                <div class="stats-number text-warning" id="pendingTasks">0</div>
+                                <div class="stats-label mt-2 fw-bold text-secondary">In Progress / Pending</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card stats-card">
+                                <div class="stats-number text-success" id="completedTasks">0</div>
+                                <div class="stats-label mt-2 fw-bold text-secondary">Completed</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-clock"></i> Recent Assignments
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="recentTasksTable">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Complaint</th>
+                                            <th>Location</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentTasksBody">
+                                        <!-- Populated via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Tasks -->
+                <div id="tasksContent" class="main-content fade-in hidden">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="text-white"><i class="fas fa-tasks"></i> My Assigned Tasks</h4>
+                    </div>
+
+                    <div id="tasksList">
+                        <!-- Populated via JS -->
+                        <div class="text-center text-white">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>No tasks found.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Task Status Modal -->
+    <div class="modal fade" id="updateTaskModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content" style="background: var(--light-bg); border-radius: 20px;">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-edit"></i> Update Task Status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateTaskForm">
+                        <input type="hidden" id="updateAssignmentId">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Status</label>
+                            <select class="form-select shadow-sm" id="updateStatus" required>
+                                <option value="assigned">Assigned (Not Started)</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="completed">Completed (Resolves Complaint)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Notes / Update</label>
+                            <textarea class="form-control shadow-sm" id="updateNotes" rows="3" placeholder="What was done?"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary rounded-pill px-4" onclick="submitTaskUpdate()">Save Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1100;">
+        <div id="alertContainer"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="staff.js"></script>
+</body>
+</html>

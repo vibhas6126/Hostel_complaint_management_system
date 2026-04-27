@@ -1,0 +1,19 @@
+
+=== COMPLAINT CATEGORIES ===
+category_id	category_name	description	created_at
+1	Electrical	Issues related to electrical fittings, lights, fans, and other electrical appliances	2026-04-26 01:40:33
+2	Plumbing	Issues related to water supply, drainage, taps, and sanitary fittings	2026-04-26 01:40:33
+3	Furniture	Issues related to beds, tables, chairs, and other furniture	2026-04-26 01:40:33
+4	Cleaning	Issues related to room cleaning, corridor cleaning, and general hygiene	2026-04-26 01:40:33
+5	Security	Issues related to security concerns, locks, and safety equipment	2026-04-26 01:40:33
+6	Internet	Issues related to Wi-Fi connectivity and network problems	2026-04-26 01:40:33
+7	Food	Issues related to mess food quality and service	2026-04-26 01:40:33
+8	Other	Any other type of complaint not covered by the above categories	2026-04-26 01:40:33
+
+=== COMPLAINT STATUS ===
+status_id	status_name	description	created_at
+1	Pending	Complaint submitted and awaiting admin review	2026-04-26 01:40:33
+2	Approved	Complaint approved by admin and awaiting staff assignment	2026-04-26 01:40:33
+3	In Progress	Complaint is being addressed by assigned staff	2026-04-26 01:40:33
+4	Resolved	Complaint has been successfully resolved	2026-04-26 01:40:33
+5	Rejected	Complaint rejected by admin	2026-04-26 01:40:33

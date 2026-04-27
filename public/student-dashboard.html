@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Hostel Complaint System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #4f46e5;
+            --accent-color: #06b6d4;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-bg: #f3f4f6;
+            --dark-text: #1f2937;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 50%, #ede9fe 100%);
+            background-attachment: fixed;
+            color: var(--dark-text);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: var(--glass-shadow);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.6rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .navbar-dark .navbar-brand i {
+            color: var(--primary-color);
+            -webkit-text-fill-color: initial;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(31, 38, 135, 0.2);
+        }
+
+        .card-header {
+            background: rgba(255, 255, 255, 0.5);
+            color: var(--dark-text);
+            border-bottom: 1px solid var(--glass-border);
+            font-weight: 700;
+            padding: 20px 25px;
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 12px 25px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-weight: 500;
+        }
+
+        .status-approved {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-weight: 500;
+        }
+
+        .status-in-progress {
+            background-color: #cce5ff;
+            color: #004085;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-weight: 500;
+        }
+
+        .status-resolved {
+            background-color: #d4edda;
+            color: #155724;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-weight: 500;
+        }
+
+        .status-rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-weight: 500;
+        }
+
+        .priority-high {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+
+        .priority-medium {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        .priority-low {
+            background-color: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .alert {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .complaint-card {
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .complaint-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        }
+
+        .priority-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .category-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .category-selected {
+            border-color: #6366f1 !important;
+            background: rgba(99, 102, 241, 0.05) !important;
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.2) !important;
+        }
+
+
+        .high-badge {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .medium-badge {
+            background-color: #fff8e1;
+            color: #ff8f00;
+        }
+
+        .low-badge {
+            background-color: #e1f5fe;
+            color: #0277bd;
+        }
+
+        .stats-card, .counter-card {
+            text-align: center;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .stats-card:hover, .counter-card:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .stats-number, .counter-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 10px 0;
+        }
+
+        .stats-label, .counter-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .progress-container {
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar-custom {
+            height: 100%;
+            border-radius: 5px;
+        }
+
+        .priority-selector {
+            cursor: pointer;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin: 5px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .priority-selector:hover {
+            transform: scale(1.03);
+        }
+
+        .priority-selected {
+            border: 2px solid var(--primary-color) !important;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .priority-high-btn {
+            background-color: #ffebee;
+            border-color: #f44336;
+        }
+
+        .priority-medium-btn {
+            background-color: #fff8e1;
+            border-color: #ff9800;
+        }
+
+        .priority-low-btn {
+            background-color: #e1f5fe;
+            border-color: #2196f3;
+        }
+
+        .category-card {
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(5px);
+            border-radius: 15px;
+        }
+
+        .category-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.15);
+        }
+
+        .category-selected {
+            border: 2px solid var(--primary-color) !important;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+            transform: scale(1.05);
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--success-color), #45a049);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(135deg, #45a049, var(--success-color));
+            transform: translateY(-2px);
+        }
+
+        .counter-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .counter-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .counter-label {
+            font-size: 1.1rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-home"></i> Student Complaint Portal
+            </a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Dashboard Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header py-3">
+                        <h4 class="mb-0"><i class="fas fa-tachometer-alt"></i> Student Dashboard</h4>
+                    </div>
+                    <div class="card-body">
+                        <h2>Welcome to Student Dashboard</h2>
+                        <p>Submit complaints about hostel issues and we'll track them for you.</p>
+
+                        <!-- Stats Cards -->
+                        <div class="row mt-4">
+                            <div class="col-md-3">
+                                <div class="counter-card">
+                                    <div class="counter-number" id="totalComplaints">0</div>
+                                    <div class="counter-label">Total Complaints</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="counter-card">
+                                    <div class="counter-number" id="pendingComplaints">0</div>
+                                    <div class="counter-label">Pending</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="counter-card">
+                                    <div class="counter-number" id="inProgressComplaints">0</div>
+                                    <div class="counter-label">In Progress</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="counter-card">
+                                    <div class="counter-number" id="resolvedComplaints">0</div>
+                                    <div class="counter-label">Resolved</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Complaint Submission Form -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-plus-circle"></i> Submit New Complaint</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="complaintForm">
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Select Category</label>
+                                <div class="row" id="categoryContainer">
+                                    <!-- Categories will be loaded here dynamically -->
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="title" class="form-label fw-bold">Title</label>
+                                <input type="text" class="form-control" id="title" placeholder="Brief title of the problem" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label fw-bold">Description</label>
+                                <textarea class="form-control" id="description" rows="4" placeholder="Please describe the issue in detail..." required></textarea>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Priority Level</label>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="priority-selector priority-high-btn text-center" data-priority="high">
+                                            <i class="fas fa-exclamation-circle fa-2x mb-2"></i>
+                                            <div class="fw-bold">High Priority</div>
+                                            <div class="small">Urgent issue</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="priority-selector priority-medium-btn text-center" data-priority="medium">
+                                            <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                                            <div class="fw-bold">Medium Priority</div>
+                                            <div class="small">Regular issue</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="priority-selector priority-low-btn text-center" data-priority="low">
+                                            <i class="fas fa-info-circle fa-2x mb-2"></i>
+                                            <div class="fw-bold">Low Priority</div>
+                                            <div class="small">Minor issue</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="priority" value="medium">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="location" class="form-label fw-bold">Location</label>
+                                <input type="text" class="form-control" id="location" placeholder="e.g., Room A-101, Common area">
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-submit">
+                                    <i class="fas fa-paper-plane"></i> Submit Complaint
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Complaints -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-list"></i> Recent Complaints</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="complaintsList">
+                            <div class="text-center text-muted py-5">
+                                <i class="fas fa-inbox fa-3x mb-3"></i>
+                                <p>No complaints submitted yet. Submit your first complaint to get started!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1100; right: 10px;">
+        <div id="alertContainer"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let selectedCategory = null;
+        let selectedPriority = 'medium';
+        const authToken = localStorage.getItem('authToken');
+
+        // Redirect to login if no auth token
+        if (!authToken || authToken === 'null') {
+            window.location.href = 'student.html';
+        }
+
+        // Add logout function
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            window.location.href = 'student.html';
+        }
+
+        // Setup logout button
+        document.addEventListener('DOMContentLoaded', () => {
+            const navBrand = document.querySelector('.navbar-brand');
+            navBrand.insertAdjacentHTML('afterend', `
+                <div class="ms-auto">
+                    <button class="btn btn-outline-danger rounded-pill px-4" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            `);
+        });
+
+        // Load categories
+        function loadCategories() {
+            fetch('/api/categories', {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('categoryContainer');
+                    container.innerHTML = '';
+
+                    if (data.categories && data.categories.length > 0) {
+                        data.categories.forEach(cat => {
+                            const categoryCard = document.createElement('div');
+                            categoryCard.className = 'col-md-3 mb-3';
+                            categoryCard.innerHTML = `
+                                <div class="card category-card h-100 text-center p-3" data-category-id="${cat.category_id}">
+                                    <div class="card-body p-2">
+                                        <i class="fas fa-${getCategoryIcon(cat.category_name)} fa-2x mb-2"></i>
+                                        <h6 class="card-title">${cat.category_name}</h6>
+                                        <small class="text-muted">${cat.description || ''}</small>
+                                    </div>
+                                </div>
+                            `;
+
+                            categoryCard.addEventListener('click', function() {
+                                // Remove selection from all category cards
+                                document.querySelectorAll('.category-card').forEach(card => {
+                                    card.classList.remove('category-selected');
+                                });
+
+                                // Add selection to clicked card
+                                this.querySelector('.card').classList.add('category-selected');
+                                selectedCategory = cat.category_id;
+                            });
+
+                            container.appendChild(categoryCard);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error loading categories:', error));
+        }
+
+        // Load complaints
+        function loadComplaints() {
+            fetch('/api/complaints', {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('complaintsList');
+                    if (data.complaints && data.complaints.length > 0) {
+                        container.innerHTML = data.complaints.map(complaint => `
+                            <div class="card complaint-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5>${complaint.title}</h5>
+                                            <p class="mb-2">${complaint.description}</p>
+                                            <div class="d-flex gap-2">
+                                                <span class="badge bg-primary">${complaint.category_name}</span>
+                                                <span class="badge ${getPriorityClass(complaint.priority)}">${complaint.priority}</span>
+                                                <span class="badge ${getStatusClass(complaint.status_name)}">${complaint.status_name}</span>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <small class="text-muted">Submitted: ${new Date(complaint.created_at).toLocaleDateString()}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = `
+                            <div class="text-center text-muted py-5">
+                                <i class="fas fa-inbox fa-3x mb-3"></i>
+                                <p>No complaints submitted yet. Submit your first complaint to get started!</p>
+                            </div>
+                        `;
+                    }
+
+                    // Update stats
+                    updateStats(data.complaints);
+                })
+                .catch(error => console.error('Error loading complaints:', error));
+        }
+
+        // Load stats
+        function loadStats() {
+            fetch('/api/stats/overview', {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('totalComplaints').textContent = data.stats.totals.total_complaints || 0;
+                        document.getElementById('pendingComplaints').textContent = data.stats.totals.pending_complaints || 0;
+                        document.getElementById('inProgressComplaints').textContent = data.stats.totals.in_progress_complaints || 0;
+                        document.getElementById('resolvedComplaints').textContent = data.stats.totals.resolved_complaints || 0;
+                    }
+                })
+                .catch(error => console.error('Error loading stats:', error));
+        }
+
+        // Handle form submission
+        document.getElementById('complaintForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (!selectedCategory) {
+                showAlert('Please select a category', 'danger');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('category_id', selectedCategory);
+            formData.append('title', document.getElementById('title').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('priority', selectedPriority);
+            formData.append('location', document.getElementById('location').value);
+
+            fetch('/api/complaints', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('Complaint submitted successfully!', 'success');
+                    document.getElementById('complaintForm').reset();
+                    document.getElementById('priority').value = 'medium';
+                    selectedCategory = null;
+                    selectedPriority = 'medium';
+
+                    // Remove all selections
+                    document.querySelectorAll('.category-card').forEach(card => {
+                        card.classList.remove('category-selected');
+                    });
+
+                    document.querySelectorAll('.priority-selector').forEach(selector => {
+                        selector.classList.remove('priority-selected');
+                    });
+
+                    loadComplaints();
+                } else {
+                    showAlert(data.message || 'Failed to submit complaint', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('Failed to submit complaint: ' + error.message, 'danger');
+            });
+        });
+
+        // Priority selection
+        document.querySelectorAll('.priority-selector').forEach(selector => {
+            selector.addEventListener('click', function() {
+                document.querySelectorAll('.priority-selector').forEach(s => {
+                    s.classList.remove('priority-selected');
+                });
+
+                this.classList.add('priority-selected');
+                selectedPriority = this.dataset.priority;
+                document.getElementById('priority').value = selectedPriority;
+            });
+        });
+
+        // Show alert function
+        function showAlert(message, type) {
+    if (!document.getElementById('toast-styles')) {
+        const style = document.createElement('style');
+        style.id = 'toast-styles';
+        style.innerHTML = `
+            .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+            .custom-toast { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 15px 20px; display: flex; align-items: center; gap: 15px; transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: 350px; min-width: 250px; }
+            .custom-toast.show { transform: translateX(0); }
+            .custom-toast .icon { font-size: 1.5rem; }
+            .custom-toast.success .icon { color: #10b981; }
+            .custom-toast.danger .icon { color: #ef4444; }
+            .custom-toast.info .icon { color: #3b82f6; }
+            .custom-toast.warning .icon { color: #f59e0b; }
+            .custom-toast .message { flex-grow: 1; font-weight: 600; color: #1f2937; font-size: 0.95rem; }
+            .custom-toast .close-btn { background: none; border: none; color: #6b7280; cursor: pointer; padding: 0; font-size: 1.2rem; transition: color 0.2s; }
+            .custom-toast .close-btn:hover { color: #1f2937; }
+        `;
+        document.head.appendChild(style);
+    }
+
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    let iconClass = 'fa-info-circle';
+    if (type === 'success') iconClass = 'fa-check-circle';
+    if (type === 'danger' || type === 'error') iconClass = 'fa-exclamation-circle';
+    if (type === 'warning') iconClass = 'fa-exclamation-triangle';
+    if (type === 'error') type = 'danger';
+
+    const toast = document.createElement('div');
+    toast.className = `custom-toast ${type}`;
+    toast.innerHTML = `
+        <div class="icon"><i class="fas ${iconClass}"></i></div>
+        <div class="message">${message}</div>
+        <button class="close-btn" onclick="this.parentElement.classList.remove('show'); setTimeout(function(){ this.parentElement.remove(); }.bind(this), 400)"><i class="fas fa-times"></i></button>
+    `;
+    
+    container.appendChild(toast);
+    
+    setTimeout(function() { toast.classList.add('show'); }, 10);
+    
+    setTimeout(function() {
+        toast.classList.remove('show');
+        setTimeout(function() { if (toast.parentElement) toast.remove(); }, 400);
+    }, 4000);
+}
+
+        // Helper functions
+        function getCategoryIcon(categoryName) {
+            const icons = {
+                'Electrical': 'plug',
+                'Plumbing': 'faucet',
+                'Furniture': 'couch',
+                'Cleaning': 'broom',
+                'Security': 'shield-alt',
+                'Internet': 'wifi',
+                'Food': 'utensils',
+                'Other': 'question-circle'
+            };
+
+            return icons[categoryName] || 'question-circle';
+        }
+
+        function getPriorityClass(priority) {
+            const classes = {
+                'high': 'bg-danger text-white',
+                'medium': 'bg-warning text-dark',
+                'low': 'bg-info text-white'
+            };
+
+            return classes[priority] || 'bg-secondary';
+        }
+
+        function getStatusClass(status) {
+            const classes = {
+                'Pending': 'bg-warning text-dark',
+                'Approved': 'bg-primary text-white',
+                'In Progress': 'bg-info text-white',
+                'Resolved': 'bg-success text-white',
+                'Rejected': 'bg-danger text-white'
+            };
+
+            return classes[status] || 'bg-secondary';
+        }
+
+        function updateStats(complaints) {
+            if (!complaints || complaints.length === 0) return;
+
+            const total = complaints.length;
+            const pending = complaints.filter(c => c.status_name === 'Pending').length;
+            const inProgress = complaints.filter(c => c.status_name === 'In Progress').length;
+            const resolved = complaints.filter(c => c.status_name === 'Resolved').length;
+
+            document.getElementById('totalComplaints').textContent = total;
+            document.getElementById('pendingComplaints').textContent = pending;
+            document.getElementById('inProgressComplaints').textContent = inProgress;
+            document.getElementById('resolvedComplaints').textContent = resolved;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const userStr = localStorage.getItem('currentUser');
+
+            if (!authToken || authToken === 'null' || !userStr) {
+                // Redirect to login if no token
+                window.location.href = 'student.html';
+                return;
+            }
+            
+            try {
+                const currentUser = JSON.parse(userStr);
+                if (currentUser.role !== 'student') {
+                    window.location.href = 'student.html';
+                    return;
+                }
+            } catch (e) {
+                window.location.href = 'student.html';
+                return;
+            }
+
+            loadCategories();
+            loadComplaints();
+            loadStats();
+        });
+    </script>
+</body>
+</html>
